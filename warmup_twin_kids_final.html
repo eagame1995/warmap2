@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Warm-up: Being a Twin — Final Kids Edition</title>
+  <style>
+    :root{
+      --bg1:#fff7fb;
+      --bg2:#eef9ff;
+      --card:#ffffff;
+      --ink:#25314f;
+      --muted:#66708a;
+      --pink:#ff5fa2;
+      --purple:#8b5cf6;
+      --blue:#38bdf8;
+      --teal:#2dd4bf;
+      --yellow:#facc15;
+      --orange:#fb923c;
+      --green:#22c55e;
+      --red:#ef4444;
+      --border:#dbeafe;
+      --shadow:0 12px 30px rgba(103, 80, 164, .12);
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:"Trebuchet MS", "Arial Rounded MT Bold", Arial, sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at 10% 20%, rgba(255,95,162,.14), transparent 20%),
+        radial-gradient(circle at 85% 10%, rgba(56,189,248,.18), transparent 22%),
+        radial-gradient(circle at 90% 80%, rgba(250,204,21,.15), transparent 18%),
+        linear-gradient(180deg,var(--bg1),var(--bg2));
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+    .floating{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+    .bubble{position:absolute;border-radius:50%;opacity:.16;animation:drift linear infinite;filter:blur(1px)}
+    @keyframes drift{from{transform:translateY(20px) translateX(0) scale(1)}to{transform:translateY(-120vh) translateX(24px) scale(1.15)}}
+    .wrap{max-width:1100px;margin:0 auto;padding:24px;position:relative;z-index:1}
+    .hero{
+      position:relative;background:linear-gradient(135deg,#fff 0%, #f8fbff 45%, #fff4cc 100%);
+      border:2px solid rgba(255,255,255,.8);border-radius:32px;padding:26px;box-shadow:var(--shadow);
+      margin-bottom:22px;overflow:hidden;animation:popIn .7s ease;
+    }
+    .hero::after{content:"✨";position:absolute;right:18px;top:10px;font-size:42px;transform:rotate(12deg)}
+    @keyframes popIn{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+    h1,h2,h3,p{margin-top:0}
+    h1{font-size:clamp(30px,4vw,48px);line-height:1.05;margin-bottom:8px}
+    h2{font-size:28px;margin-bottom:10px}
+    .toolbar{display:grid;grid-template-columns:1.5fr .8fr .8fr;gap:14px;margin-top:18px}
+    .status-card{background:rgba(255,255,255,.85);border:2px solid #eef2ff;border-radius:22px;padding:14px 16px;box-shadow:var(--shadow)}
+    .label{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;margin-bottom:8px}
+    .progress-shell{height:18px;background:#eef2ff;border-radius:999px;overflow:hidden;position:relative}
+    .progress-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--pink),var(--purple),var(--blue),var(--teal));border-radius:999px;transition:width .55s cubic-bezier(.2,.8,.2,1);position:relative}
+    .progress-bar::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent);animation:shine 2.2s linear infinite}
+    @keyframes shine{0%{transform:translateX(-100%)}100%{transform:translateX(200%)}}
+    .big-number{font-size:32px;font-weight:900}
+    .mini{font-size:14px;color:var(--muted)}
+    .pill-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+    .pill{display:inline-flex;align-items:center;gap:6px;background:#fff;border:2px solid #f3e8ff;border-radius:999px;padding:8px 12px;font-size:14px;font-weight:700;box-shadow:0 4px 10px rgba(0,0,0,.03)}
+    .card{background:rgba(255,255,255,.92);border:2px solid rgba(255,255,255,.95);border-radius:28px;padding:22px;box-shadow:var(--shadow);margin-bottom:22px;animation:popIn .7s ease both}
+    .card:hover{transform:translateY(-2px);transition:transform .2s ease}
+    .task-title{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+    .num{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-weight:900;color:#fff;font-size:18px;background:linear-gradient(135deg,var(--pink),var(--orange));box-shadow:0 8px 16px rgba(255,95,162,.24)}
+    .quote{background:linear-gradient(135deg,#eef9ff,#fff7fe);border:2px dashed #c4b5fd;padding:14px 16px;border-radius:18px;margin:10px 0}
+    .choice,.starter,.match-card{background:linear-gradient(180deg,#ffffff,#f8fbff);border:2px solid #dbeafe;border-radius:18px;padding:13px 15px;margin:10px 0;transition:transform .2s ease,border-color .2s ease, box-shadow .2s ease}
+    .choice:hover,.starter:hover,.match-card:hover{transform:scale(1.01);box-shadow:0 8px 16px rgba(56,189,248,.08)}
+    .choice.correct,.match-card.done{border-color:#86efac;background:#f0fdf4}
+    .choice.wrong,.match-card.wrong{border-color:#fecaca;background:#fef2f2}
+    .match-card.active{border-color:#a78bfa;background:#f5f3ff;box-shadow:0 8px 16px rgba(139,92,246,.12)}
+    label{cursor:pointer}
+    textarea,select{width:100%;padding:12px 14px;border-radius:16px;border:2px solid #cbd5e1;font-size:16px;font-family:inherit;background:#fff}
+    textarea{min-height:100px;resize:vertical}
+    .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    .btn{border:none;border-radius:16px;padding:12px 16px;font-size:15px;font-weight:900;cursor:pointer;color:#fff;background:linear-gradient(135deg,var(--pink),var(--purple));box-shadow:0 10px 20px rgba(139,92,246,.2);transition:transform .15s ease, filter .2s ease}
+    .btn.secondary{background:linear-gradient(135deg,var(--blue),var(--teal))}
+    .btn.ghost{background:linear-gradient(135deg,#94a3b8,#64748b)}
+    .btn:hover{transform:translateY(-2px)}
+    .btn:active{transform:translateY(1px) scale(.98)}
+    .result{margin-top:12px;font-weight:900;font-size:16px;min-height:24px}
+    .good{color:var(--green)} .warn{color:var(--orange)} .bad{color:var(--red)}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .stars{display:flex;gap:10px;justify-content:center;align-items:center;min-height:42px;margin-top:8px}
+    .star{font-size:38px;opacity:.2;transform:scale(.7) rotate(-10deg);transition:all .45s cubic-bezier(.2,.8,.2,1);filter:drop-shadow(0 8px 10px rgba(250,204,21,.25))}
+    .star.on{opacity:1;transform:scale(1.08) rotate(0deg)}
+    .final-box{text-align:center;background:linear-gradient(135deg,#fdf4ff,#eef9ff,#fff8db)}
+    .hidden{display:none}
+    .wiggle{animation:wiggle .35s ease}
+    @keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-2deg)}75%{transform:rotate(2deg)}}
+    .pulse{animation:pulse .7s ease}
+    @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.03)}100%{transform:scale(1)}}
+    canvas#confetti{position:fixed;inset:0;pointer-events:none;z-index:20}
+    .match-columns h3{margin:6px 0 10px;font-size:18px}
+    .match-card{cursor:pointer;user-select:none}
+    .match-card small{display:block;color:var(--muted);font-weight:700;margin-top:4px}
+    @media(max-width:940px){.toolbar,.two-col{grid-template-columns:1fr}.wrap{padding:16px}}
+  </style>
+</head>
+<body>
+  <canvas id="confetti"></canvas>
+  <div class="floating" aria-hidden="true" id="floating"></div>
+
+  <div class="wrap">
+    <section class="hero">
+      <h1>Warm-up: <em>Being a Twin</em> 🌈</h1>
+
+      <div class="toolbar">
+        <div class="status-card">
+          <div class="label">Progress</div>
+          <div class="progress-shell"><div class="progress-bar" id="progressBar"></div></div>
+          <div class="mini" id="progressText" style="margin-top:8px">0 / 5 tasks completed</div>
+        </div>
+        <div class="status-card">
+          <div class="label">Points</div>
+          <div class="big-number" id="score">0</div>
+          <div class="mini">Maximum: 5 points</div>
+        </div>
+        <div class="status-card">
+          <div class="label">Timer</div>
+          <div class="big-number" id="timer">05:00</div>
+          <div class="btn-row">
+            <button class="btn ghost" onclick="toggleTimer()" id="timerBtn">Start</button>
+            <button class="btn secondary" onclick="resetAll()">Reset</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="pill-row">
+        <span class="pill">🎯 speaking</span>
+        <span class="pill">🔮 prediction</span>
+        <span class="pill">💬 vocabulary</span>
+        <span class="pill">👫 pair work</span>
+        <span class="pill">⏱ 5–10 minutes</span>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Useful language</h2>
+      <div class="pill-row">
+        <span class="pill">They look happy.</span>
+        <span class="pill">They are very close.</span>
+        <span class="pill">Maybe they like being together.</span>
+        <span class="pill">Sometimes people need space.</span>
+        <span class="pill">I think...</span>
+        <span class="pill">In my opinion...</span>
+      </div>
+    </section>
+
+    <section class="card" id="task1">
+      <div class="task-title"><div class="num">1</div><h2>Lead-in poll</h2></div>
+      <p>Choose the best answer:</p>
+      <div class="choice"><label><input type="radio" name="poll" value="a"> Twins always want to do everything together.</label></div>
+      <div class="choice"><label><input type="radio" name="poll" value="b"> Twins can be close, but they may want different things too.</label></div>
+      <div class="choice"><label><input type="radio" name="poll" value="c"> Twins usually do not like each other.</label></div>
+      <div class="btn-row"><button class="btn" onclick="checkPoll()">Check</button></div>
+      <div id="pollResult" class="result"></div>
+    </section>
+
+    <section class="card" id="task2">
+      <div class="task-title"><div class="num">2</div><h2>Match the words</h2></div>
+      <p>First click a word on the left, then click the matching meaning on the right.</p>
+      <div class="two-col match-columns">
+        <div>
+          <h3>Words</h3>
+          <div class="match-card left-card" data-side="left" data-key="identical">identical<small>word</small></div>
+          <div class="match-card left-card" data-side="left" data-key="brave">brave<small>word</small></div>
+          <div class="match-card left-card" data-side="left" data-key="lucky">lucky<small>word</small></div>
+          <div class="match-card left-card" data-side="left" data-key="apart">apart<small>word</small></div>
+        </div>
+        <div>
+          <h3>Meanings</h3>
+          <div class="match-card right-card" data-side="right" data-key="brave">not afraid<small>meaning</small></div>
+          <div class="match-card right-card" data-side="right" data-key="apart">not together<small>meaning</small></div>
+          <div class="match-card right-card" data-side="right" data-key="identical">the same<small>meaning</small></div>
+          <div class="match-card right-card" data-side="right" data-key="lucky">having good things in life<small>meaning</small></div>
+        </div>
+      </div>
+      <div id="matchResult" class="result"></div>
+    </section>
+
+    <section class="card" id="task3">
+      <div class="task-title"><div class="num">3</div><h2>Predict before reading</h2></div>
+      <p>Who wants to spend <strong>less time together</strong>?</p>
+      <div class="choice"><label><input type="radio" name="predict" value="Chloe"> Chloe</label></div>
+      <div class="choice"><label><input type="radio" name="predict" value="Leah"> Leah</label></div>
+      <div class="btn-row"><button class="btn" onclick="checkPredict()">Check</button></div>
+      <div id="predictResult" class="result"></div>
+    </section>
+
+    <section class="card" id="task4">
+      <div class="task-title"><div class="num">4</div><h2>Complete the sentence</h2></div>
+      <p>Write 1–2 ideas:</p>
+      <div class="starter">A good twin / brother / sister / friend is someone who...</div>
+      <textarea id="openAnswer" placeholder="Example: ...helps you, listens to you, and gives you space."></textarea>
+      <div class="btn-row">
+        <button class="btn" onclick="checkOpenTask()">Save my answer</button>
+        <button class="btn secondary" onclick="showIdeas()">Show model ideas</button>
+      </div>
+      <div id="openResult" class="result"></div>
+      <div id="ideas" class="hidden quote">
+        <strong>Possible answers:</strong><br>
+        • listens to you<br>
+        • helps you<br>
+        • spends time with you<br>
+        • understands you<br>
+        • gives you personal space
+      </div>
+    </section>
+
+    <section class="card" id="task5">
+      <div class="task-title"><div class="num">5</div><h2>Speak</h2></div>
+      <p>Discuss in pairs and choose your opinion:</p>
+      <label>Is it important to have your own space?
+        <select id="spaceOpinion">
+          <option value="">Choose your opinion</option>
+          <option value="yes">Yes, it is important.</option>
+          <option value="sometimes">Sometimes.</option>
+          <option value="no">No, being together is better.</option>
+        </select>
+      </label>
+      <div class="btn-row"><button class="btn" onclick="showSpeakFeedback()">Show feedback phrase</button></div>
+      <div id="speakResult" class="result"></div>
+    </section>
+
+    <section class="card final-box" id="finalCard">
+      <h2>Final Stars ⭐</h2>
+      <div class="stars" id="stars">
+        <span class="star">⭐</span>
+        <span class="star">⭐</span>
+        <span class="star">⭐</span>
+      </div>
+      <p id="finalMessage" class="mini" style="font-size:16px;margin-top:10px">Finish the tasks to collect your stars!</p>
+    </section>
+  </div>
+
+  <script>
+    const state = {
+      score: 0,
+      mistakes: 0,
+      completed: new Set(),
+      timerSeconds: 300,
+      timerRunning: false,
+      timerInterval: null,
+      selectedLeft: null,
+      selectedRight: null,
+      matchedPairs: new Set()
+    };
+
+    function createBubbles(){
+      const container = document.getElementById('floating');
+      const colors = ['#ff5fa2','#8b5cf6','#38bdf8','#2dd4bf','#facc15'];
+      for(let i=0;i<16;i++){
+        const b = document.createElement('div');
+        b.className = 'bubble';
+        const size = 24 + Math.random()*78;
+        b.style.width = size + 'px';
+        b.style.height = size + 'px';
+        b.style.left = Math.random()*100 + 'vw';
+        b.style.bottom = (-100 - Math.random()*400) + 'px';
+        b.style.background = colors[i % colors.length];
+        b.style.animationDuration = (12 + Math.random()*16) + 's';
+        b.style.animationDelay = (-Math.random()*20) + 's';
+        container.appendChild(b);
+      }
+    }
+
+    function formatTime(sec){
+      const m = String(Math.floor(sec/60)).padStart(2,'0');
+      const s = String(sec%60).padStart(2,'0');
+      return `${m}:${s}`;
+    }
+
+    function updateTimerUI(){
+      document.getElementById('timer').textContent = formatTime(state.timerSeconds);
+    }
+
+    function toggleTimer(){
+      const btn = document.getElementById('timerBtn');
+      if(!state.timerRunning){
+        state.timerRunning = true;
+        btn.textContent = 'Pause';
+        if(!state.timerInterval){
+          state.timerInterval = setInterval(() => {
+            if(state.timerRunning && state.timerSeconds > 0){
+              state.timerSeconds--;
+              updateTimerUI();
+              if(state.timerSeconds === 0){
+                state.timerRunning = false;
+                btn.textContent = 'Start';
+                document.getElementById('timer').classList.add('wiggle');
+                setTimeout(()=>document.getElementById('timer').classList.remove('wiggle'), 400);
+              }
+            }
+          }, 1000);
+        }
+      } else {
+        state.timerRunning = false;
+        btn.textContent = 'Start';
+      }
+    }
+
+    function markTask(taskId){
+      if(!state.completed.has(taskId)){
+        state.completed.add(taskId);
+        state.score++;
+        updateUI();
+      }
+      pulseCard(taskId);
+    }
+
+    function pulseCard(taskId){
+      const el = document.getElementById(taskId);
+      el.classList.add('pulse');
+      setTimeout(()=>el.classList.remove('pulse'), 700);
+    }
+
+    function recordMistake(){
+      state.mistakes++;
+      updateUI();
+    }
+
+    function updateUI(){
+      document.getElementById('score').textContent = state.score;
+      const completed = state.completed.size;
+      const progress = Math.round((completed/5)*100);
+      document.getElementById('progressBar').style.width = progress + '%';
+      document.getElementById('progressText').textContent = `${completed} / 5 tasks completed`;
+      updateStars();
+      maybeCelebrate();
+    }
+
+    function updateStars(){
+      const stars = document.querySelectorAll('.star');
+      const starCount = state.score >= 5 ? 3 : state.score >= 4 ? 2 : state.score >= 2 ? 1 : 0;
+      stars.forEach((star, i) => star.classList.toggle('on', i < starCount));
+      const msg = document.getElementById('finalMessage');
+      if(state.score === 5 && state.mistakes === 0){
+        msg.textContent = 'Perfect score! You are a superstar!';
+      } else if(state.score === 5){
+        msg.textContent = 'Great job! You finished all the tasks!';
+      } else if(state.score >= 4){
+        msg.textContent = 'Amazing work! Nearly there!';
+      } else if(state.score >= 2){
+        msg.textContent = 'Good job! Keep going!';
+      } else {
+        msg.textContent = 'Finish the tasks to collect your stars!';
+      }
+    }
+
+    function maybeCelebrate(){
+      if(state.score === 5 && state.completed.size === 5 && state.mistakes === 0 && !window.__celebrated){
+        window.__celebrated = true;
+        fireConfetti();
+        document.getElementById('finalCard').classList.add('pulse');
+      }
+    }
+
+    function setResult(id, text, kind='good'){
+      const el = document.getElementById(id);
+      el.textContent = text;
+      el.className = 'result ' + kind;
+    }
+
+    function shake(el){
+      el.classList.add('wiggle');
+      setTimeout(()=>el.classList.remove('wiggle'), 400);
+    }
+
+    function checkPoll(){
+      const answer = document.querySelector('input[name="poll"]:checked');
+      if(!answer){ setResult('pollResult', 'Please choose an answer first.', 'warn'); return; }
+      if(answer.value === 'b'){
+        setResult('pollResult', 'Correct! Great thinking!', 'good');
+        markTask('task1');
+      } else {
+        recordMistake();
+        setResult('pollResult', 'Oops! Try again.', 'warn');
+        shake(document.getElementById('task1'));
+      }
+    }
+
+    function setupMatching(){
+      document.querySelectorAll('.match-card').forEach(card => {
+        card.addEventListener('click', () => {
+          if(card.classList.contains('done')) return;
+          const side = card.dataset.side;
+          if(side === 'left'){
+            if(state.selectedLeft) state.selectedLeft.classList.remove('active');
+            state.selectedLeft = card;
+            card.classList.add('active');
+          } else {
+            if(state.selectedRight) state.selectedRight.classList.remove('active');
+            state.selectedRight = card;
+            card.classList.add('active');
+          }
+          tryMatch();
+        });
+      });
+    }
+
+    function clearSelections(){
+      if(state.selectedLeft) state.selectedLeft.classList.remove('active');
+      if(state.selectedRight) state.selectedRight.classList.remove('active');
+      state.selectedLeft = null;
+      state.selectedRight = null;
+    }
+
+    function tryMatch(){
+      if(!state.selectedLeft || !state.selectedRight) return;
+      const left = state.selectedLeft;
+      const right = state.selectedRight;
+      if(left.dataset.key === right.dataset.key){
+        left.classList.remove('active');
+        right.classList.remove('active');
+        left.classList.add('done');
+        right.classList.add('done');
+        state.matchedPairs.add(left.dataset.key);
+        clearSelections();
+        if(state.matchedPairs.size === 4){
+          setResult('matchResult', 'Excellent! All pairs are matched!', 'good');
+          markTask('task2');
+        } else {
+          setResult('matchResult', 'Good! Keep matching.', 'good');
+        }
+      } else {
+        recordMistake();
+        left.classList.add('wrong');
+        right.classList.add('wrong');
+        setResult('matchResult', 'Not quite. Try again.', 'warn');
+        shake(document.getElementById('task2'));
+        setTimeout(() => {
+          left.classList.remove('wrong');
+          right.classList.remove('wrong');
+          clearSelections();
+        }, 500);
+      }
+    }
+
+    function checkPredict(){
+      const answer = document.querySelector('input[name="predict"]:checked');
+      if(!answer){ setResult('predictResult', 'Please choose Chloe or Leah.', 'warn'); return; }
+      if(answer.value === 'Chloe'){
+        setResult('predictResult', 'Correct! Nice prediction!', 'good');
+        markTask('task3');
+      } else {
+        recordMistake();
+        setResult('predictResult', 'Oops! Try again.', 'warn');
+        shake(document.getElementById('task3'));
+      }
+    }
+
+    function checkOpenTask(){
+      const val = document.getElementById('openAnswer').value.trim();
+      if(val.length < 8){
+        setResult('openResult', 'Write a little more, please.', 'warn');
+        return;
+      }
+      setResult('openResult', 'Wonderful idea! Your sentence is saved.', 'good');
+      markTask('task4');
+    }
+
+    function showIdeas(){
+      document.getElementById('ideas').classList.remove('hidden');
+      document.getElementById('ideas').classList.add('pulse');
+      setTimeout(()=>document.getElementById('ideas').classList.remove('pulse'), 700);
+    }
+
+    function showSpeakFeedback(){
+      const val = document.getElementById('spaceOpinion').value;
+      if(!val){ setResult('speakResult', 'Choose an opinion first.', 'warn'); return; }
+      const map = {
+        yes: 'Useful phrase: I like spending time with people, but I also need my own space.',
+        sometimes: 'Useful phrase: I like being together, but sometimes people need time apart.',
+        no: 'Useful phrase: I think doing things together is better because you feel happier and stronger.'
+      };
+      setResult('speakResult', map[val], 'good');
+      markTask('task5');
+    }
+
+    function resetAll(){
+      state.score = 0;
+      state.mistakes = 0;
+      state.completed = new Set();
+      state.timerSeconds = 300;
+      state.timerRunning = false;
+      state.selectedLeft = null;
+      state.selectedRight = null;
+      state.matchedPairs = new Set();
+      window.__celebrated = false;
+      document.getElementById('timerBtn').textContent = 'Start';
+      updateTimerUI();
+      updateUI();
+      ['pollResult','matchResult','predictResult','openResult','speakResult'].forEach(id=>document.getElementById(id).textContent='');
+      document.querySelectorAll('input[type="radio"]').forEach(el=>el.checked=false);
+      document.querySelectorAll('select').forEach(el=>el.selectedIndex=0);
+      document.getElementById('openAnswer').value='';
+      document.getElementById('ideas').classList.add('hidden');
+      document.querySelectorAll('.result').forEach(el=>el.className='result');
+      document.querySelectorAll('.match-card').forEach(card=>card.classList.remove('done','active','wrong'));
+    }
+
+    function fireConfetti(){
+      const canvas = document.getElementById('confetti');
+      const ctx = canvas.getContext('2d');
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = innerWidth * dpr;
+      canvas.height = innerHeight * dpr;
+      canvas.style.width = innerWidth + 'px';
+      canvas.style.height = innerHeight + 'px';
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+      const pieces = Array.from({length: 160}, () => ({
+        x: Math.random()*innerWidth,
+        y: -20 - Math.random()*innerHeight*.4,
+        w: 6 + Math.random()*8,
+        h: 8 + Math.random()*12,
+        vx: -2 + Math.random()*4,
+        vy: 2 + Math.random()*4,
+        r: Math.random()*Math.PI,
+        vr: -0.2 + Math.random()*0.4,
+        color: ['#ff5fa2','#8b5cf6','#38bdf8','#2dd4bf','#facc15','#fb923c'][Math.floor(Math.random()*6)]
+      }));
+      let frames = 0;
+      function draw(){
+        ctx.clearRect(0,0,innerWidth,innerHeight);
+        pieces.forEach(p=>{
+          p.x += p.vx; p.y += p.vy; p.r += p.vr; p.vy += 0.02;
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.r);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+          ctx.restore();
+        });
+        frames++;
+        if(frames < 220){ requestAnimationFrame(draw); }
+        else { ctx.clearRect(0,0,innerWidth,innerHeight); }
+      }
+      draw();
+    }
+
+    window.addEventListener('resize', ()=>{ if(window.__celebrated){ document.getElementById('confetti').width = innerWidth; document.getElementById('confetti').height = innerHeight; } });
+    createBubbles();
+    setupMatching();
+    updateTimerUI();
+    updateUI();
+  </script>
+</body>
+</html>
